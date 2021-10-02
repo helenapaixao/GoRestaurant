@@ -1,33 +1,46 @@
-import React, { useState } from 'react';
-import { FiEdit3, FiTrash } from 'react-icons/fi';
+import React, { useState } from "react";
+import { FiEdit3, FiTrash } from "react-icons/fi";
 
-import * as S from './styles';
-import api from '../../services/api';
-
+import * as S from "./styles";
+import api from "../../services/api";
 
 interface IFoodPlate {
-  id: number;
+  id: string;
+
   name: string;
   image: string;
   price: string;
   description: string;
   available: boolean;
-
 }
 
 export const Food: React.FC = (available) => {
   const [food, setFood] = useState<IFoodPlate[]>([]);
-  const [isAvailable, setisAvailable] = useState(true);
   const [editingFood, setEditingFood] = useState(false);
-  const [/* toggleAvailable */, setToggleAvailable] = useState(false)
+  const [/* toggleAvailable */, setToggleAvailable] = useState(false);
+  const [isAvailable, setisAvailable] = useState(true);
 
-  const toggleAvailable = async () => {
-      const food
+  async function toggleAvailable() {
+    await api.put<IFoodPlate>(`/foods/${food.id}`, {
+      available: !food.available,
+    }); 
+    setToggleAvailable(!food.available);
   }
-  return (
 
+
+  const handleEditFood = (food: boolean | ((prevState: boolean) => boolean)) => {
+    setEditingFood(food);
+
+  }
+
+  const handleDelete = async (id: number) => {
+    await api.delete<IFoodPlate>(`/foods/${id}`);
+  /*   setFood(food.filter((food) => food.id !== id)); */
+  };
+
+  return (
     <>
-        <S.Container available={isAvailable}>
+      <S.Container available={isAvailable}>
         <header>
           <img src={food.image} alt={food.name} />
         </header>
@@ -43,7 +56,7 @@ export const Food: React.FC = (available) => {
             <button
               type="button"
               className="icon"
-              onClick={() => setEditingFood(!editingFood)}
+              onClick={() => handleEditFood(!editingFood)}
               data-testid={`edit-food-${food.id}`}
             >
               <FiEdit3 size={20} />
@@ -60,14 +73,14 @@ export const Food: React.FC = (available) => {
           </div>
 
           <div className="availability-container">
-            <p>{isAvailable ? 'Disponível' : 'Indisponível'}</p>
+            <p>{isAvailable ? "Disponível" : "Indisponível"}</p>
 
             <label htmlFor={`available-switch-${food.id}`} className="switch">
               <input
                 id={`available-switch-${food.id}`}
                 type="checkbox"
                 checked={isAvailable}
-                onChange={setToggleAvailable}
+                onChange={toggleAvailable}
                 data-testid={`change-status-food-${food.id}`}
               />
               <span className="slider" />
@@ -75,13 +88,9 @@ export const Food: React.FC = (available) => {
           </div>
         </section>
       </S.Container>
-
-
-</>
-  )
-}
-
-
+    </>
+  );
+};
 
 /*   toggleAvailable = async () => {
     const { food } = this.props;
@@ -101,9 +110,7 @@ export const Food: React.FC = (available) => {
     handleEditFood(food);
   } */
 
-
-  
-  /*   const { isAvailable } = this.state;
+/*   const { isAvailable } = this.state;
     const { food, handleDelete } = this.props;
 
      */
