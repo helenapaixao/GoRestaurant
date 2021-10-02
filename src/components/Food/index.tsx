@@ -2,11 +2,9 @@ import React, { useState } from "react";
 import { FiEdit3, FiTrash } from "react-icons/fi";
 
 import * as S from "./styles";
-import api from "../../services/api";
 
 interface IFoodPlate {
   id: string;
-
   name: string;
   image: string;
   price: string;
@@ -14,29 +12,26 @@ interface IFoodPlate {
   available: boolean;
 }
 
-export const Food: React.FC = (available) => {
-  const [food, setFood] = useState<IFoodPlate[]>([]);
-  const [editingFood, setEditingFood] = useState(false);
-  const [/* toggleAvailable */, setToggleAvailable] = useState(false);
-  const [isAvailable, setisAvailable] = useState(true);
+interface IProps {
+  food: IFoodPlate;
+  handleDelete: (id: string) => {};
+  handleEditFood: (food: IFoodPlate) => void;
+}
 
-  async function toggleAvailable() {
-    await api.put<IFoodPlate>(`/foods/${food.id}`, {
-      available: !food.available,
-    }); 
-    setToggleAvailable(!food.available);
+const Food: React.FC<IProps> = ({
+  food,
+  handleDelete,
+  handleEditFood,
+}: IProps) => {
+  const [isAvailable, setIsAvailable] = useState(food.available);
+
+  async function toggleAvailable(): Promise<void> {
+    setIsAvailable(!isAvailable);
   }
 
-
-  const handleEditFood = (food: boolean | ((prevState: boolean) => boolean)) => {
-    setEditingFood(food);
-
+  function setEditingFood(): void {
+    handleEditFood(food);
   }
-
-  const handleDelete = async (id: number) => {
-    await api.delete<IFoodPlate>(`/foods/${id}`);
-  /*   setFood(food.filter((food) => food.id !== id)); */
-  };
 
   return (
     <>
@@ -56,7 +51,7 @@ export const Food: React.FC = (available) => {
             <button
               type="button"
               className="icon"
-              onClick={() => handleEditFood(!editingFood)}
+              onClick={() => setEditingFood()}
               data-testid={`edit-food-${food.id}`}
             >
               <FiEdit3 size={20} />
@@ -91,28 +86,5 @@ export const Food: React.FC = (available) => {
     </>
   );
 };
-
-/*   toggleAvailable = async () => {
-    const { food } = this.props;
-    const { isAvailable } = this.state;
-
-    await api.put(`/foods/${food.id}`, {
-      ...food,
-      available: !isAvailable,
-    });
-
-    this.setState({ isAvailable: !isAvailable });
-  }
-
-  setEditingFood = () => {
-    const { food, handleEditFood } = this.props;
-
-    handleEditFood(food);
-  } */
-
-/*   const { isAvailable } = this.state;
-    const { food, handleDelete } = this.props;
-
-     */
 
 export default Food;
