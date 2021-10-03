@@ -1,24 +1,36 @@
 import React, {useEffect, useState } from 'react';
 import ReactModal from 'react-modal';
 
-export const Modal: React.FC = ({ openModal, children }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [modalStatus, setModalStatus] = useState(openModal);
+interface IFoodPlate{
+  id: number,
+  name: string,
+  image: string,
+  price: string,
+  description: string,
+  available: boolean
 
+}
 
-    function closeModal() {
-    setIsOpen(false);
-  }
+interface IModalProps {
+  children: React.ReactNode;
+  isOpen: boolean;
+  setIsOpen: () => void;
+
+}
+
+const Modal: React.FC<IModalProps> = ({ children, isOpen, setIsOpen }) => {
+const [modalStatus, setModalStatus] = useState(isOpen);
+
 
   useEffect(() => {
-    setModalStatus(openModal);
-  }, [openModal]);
+    setModalStatus(isOpen);
+  }, [isOpen]);
 
   
     return (
       <ReactModal
         shouldCloseOnOverlayClick={!false}
-        onRequestClose={closeModal}
+        onRequestClose={setIsOpen}
         isOpen={modalStatus}
         ariaHideApp={false}
         style={{
