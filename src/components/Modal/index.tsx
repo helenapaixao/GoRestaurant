@@ -1,5 +1,9 @@
-import { Component } from 'react';
+import React from 'react';
 import ReactModal from 'react-modal';
+
+export const Modal: React.FC = ({openModal}) => {
+ 
+
 
 class Modal extends Component {
   constructor(props) {
